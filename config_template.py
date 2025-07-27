@@ -1,0 +1,6 @@
+food_data_url = "https://your-food-data-url"
+food_log_url = "https://your-food-log-url"
+food_log_url_sheet = "if using specific worksheet"
+cycle_tracker_url = "https://your-cycle-tracker-url"
+current_cycle = "Your cycle worksheet"
+keyfilename = "Your_credential_JSON_file.json"
