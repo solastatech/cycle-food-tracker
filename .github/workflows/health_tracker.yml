@@ -1,0 +1,36 @@
+name: Run Health Tracker Daily
+
+on:
+  schedule:
+    - cron: '0 21 * * *'   # Runs every day at 21:00 UTC (== 10 PM UK time in summer)
+  workflow_dispatch:       # Manual trigger from Action tab
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r minimum_requirements.txt
+
+      - name: Run tracker
+        env:
+          GOOGLE_CRED: ${{ secrets.GOOGLE_CRED }}
+          FOOD_LOG_URL: ${{ secrets.FOOD_LOG_URL }}
+          FOOD_LOG_URL_SHEET: ${{ secrets.FOOD_LOG_URL_SHEET }}
+          FOOD_DATA_URL: ${{ secrets.FOOD_DATA_URL }}
+          FOOD_DATA_URL_SHEET: ${{ secrets.FOOD_DATA_URL_SHEET }}
+          CYCLE_TRACKER_URL: ${{ secrets.CYCLE_TRACKER_URL }}
+          CURRENT_CYCLE: ${{ secrets.CURRENT_CYCLE }}
+        run: |
+          python Health_tracker.py
