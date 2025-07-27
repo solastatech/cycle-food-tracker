@@ -1,0 +1,13 @@
+#Config file with sensitive data	
+config.py
+health-tracker.json
+
+#Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/			
+
+#MacOS
+.DS_Store
+
+
