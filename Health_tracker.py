@@ -3,17 +3,37 @@
 
 # In[1]:
 
+import os
+import json
 import numpy as np
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
-from config import (food_data_url,food_data_url_sheet, food_log_url,food_log_url_sheet, 
-cycle_tracker_url, current_cycle, keyfilename)
 
-# Authenticate
+# Auth + config
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(keyfilename, scope)
+
+try:
+    credentials_dict = json.loads(os.environ["GOOGLE_CRED"])
+    food_data_url = os.environ["FOOD_DATA_URL"]
+    food_data_url_sheet = os.environ["FOOD_DATA_URL_SHEET"]
+    food_log_url = os.environ["FOOD_LOG_URL"]
+    food_log_url_sheet = os.environ["FOOD_LOG_URL_SHEET"]
+    cycle_tracker_url = os.environ["CYCLE_TRACKER_URL"]
+    current_cycle = os.environ["CURRENT_CYCLE"]
+except KeyError:
+    from config import (
+        food_data_url, food_data_url_sheet, 
+        food_log_url, food_log_url_sheet, 
+        cycle_tracker_url, current_cycle, 
+        keyfilename
+    )
+    with open(keyfilename) as f:
+        credentials_dict = json.load(f)
+
+creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
+client = gspread.authorize(creds)
 client = gspread.authorize(creds)
 
 # Open the sheets
