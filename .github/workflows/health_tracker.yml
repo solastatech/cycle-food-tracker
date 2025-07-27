@@ -27,10 +27,10 @@ jobs:
         env:
           GOOGLE_CRED: ${{ secrets.GOOGLE_CRED }}
           FOOD_LOG_URL: ${{ secrets.FOOD_LOG_URL }}
-          FOOD_LOG_URL_SHEET: ${{ secrets.FOOD_LOG_URL_SHEET }}
+          FOOD_LOG_URL_SHEET: ${{ vars.FOOD_LOG_URL_SHEET }}
           FOOD_DATA_URL: ${{ secrets.FOOD_DATA_URL }}
-          FOOD_DATA_URL_SHEET: ${{ secrets.FOOD_DATA_URL_SHEET }}
+          FOOD_DATA_URL_SHEET: ${{ vars.FOOD_DATA_URL_SHEET }}
           CYCLE_TRACKER_URL: ${{ secrets.CYCLE_TRACKER_URL }}
-          CURRENT_CYCLE: ${{ secrets.CURRENT_CYCLE }}
+          CURRENT_CYCLE: ${{ vars.CURRENT_CYCLE }}
         run: |
           python Health_tracker.py
