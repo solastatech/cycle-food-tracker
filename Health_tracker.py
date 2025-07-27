@@ -38,7 +38,11 @@ client = gspread.authorize(creds)
 
 # Open the sheets
 food_data_spreadsheet = client.open_by_url(food_data_url)
-print("📋 Food data sheet names:", [ws.title for ws in food_data_spreadsheet.worksheets()])
+sheet_titles = [ws.title for ws in food_data_spreadsheet.worksheets()]
+print("📋 Sheet titles found:", sheet_titles)
+print("🧪 Target sheet from env var:", repr(food_data_url_sheet))
+print("🔍 Matching sheet?", food_data_url_sheet in sheet_titles)
+
 food_data_ws = food_data_spreadsheet.worksheet(food_data_url_sheet)
 food_log_ws = client.open_by_url(food_log_url).worksheet(food_log_url_sheet)
 cycle_ws = client.open_by_url(cycle_tracker_url).worksheet(current_cycle)
