@@ -5,7 +5,8 @@ health-tracker.json
 #Python
 __pycache__/
 *.pyc
-.ipynb_checkpoints/			
+.ipynb_checkpoints/	
+*.ipynb		
 
 #MacOS
 .DS_Store
