@@ -1,6 +1,8 @@
-#Config file with sensitive data	
-config.py
+#Environment files with sensitive data	
 health-tracker.json
+.env
+.env.*
+!.env.template
 
 #Python
 __pycache__/
