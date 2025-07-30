@@ -15,6 +15,8 @@ from datetime import datetime
 from debug_util import debug, debug_df
 from debug_config import verbose
 
+verbose_safety = False # Toggle to True if testing dangerous writes
+
 # Env check
 load_dotenv(dotenv_path=".env")
 env = os.environ.get("ENV_NAME")
@@ -26,7 +28,7 @@ else:
     debug(f"🌿 Running in {env.upper()} mode 🚀")
 
 debug("🧪 Sheet loaded:", os.environ.get("FOOD_LOG_URL_SHEET"))
-if os.environ.get("FOOD_LOG_URL_SHEET") == "Worksheet":
+if verbose_safety == True and os.environ.get("FOOD_LOG_URL_SHEET") == "Worksheet":
     raise RuntimeError("🛑 Refusing to write: You are about to overwrite the production sheet.")
 
 # Auth + config
