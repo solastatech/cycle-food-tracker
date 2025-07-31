@@ -39,10 +39,18 @@ if verbose_safety == True and os.environ.get("FOOD_LOG_URL_SHEET") == "Worksheet
 # Auth + config
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
-keypath = os.environ["KEY_FILE_NAME"]
-with open(keypath) as f:
-    credentials_dict = json.load(f)
+key_input = os.environ["KEY_FILE_NAME"]
 
+# 🧠 Determine whether this is a raw JSON string or a file path
+if key_input.strip().startswith("{"):
+    debug("🔐 Detected inlined JSON credentials from GitHub Secrets.")
+    credentials_dict = json.loads(key_input)
+else:
+    debug(f"📄 Loading credentials from file: {key_input}")
+    with open(key_input) as f:
+        credentials_dict = json.load(f)
+
+# Other variables
 food_data_url = os.environ["FOOD_DATA_URL"]
 food_data_url_sheet = os.environ["FOOD_DATA_URL_SHEET"]
 food_log_url = os.environ["FOOD_LOG_URL"]
