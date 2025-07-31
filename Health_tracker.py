@@ -15,15 +15,20 @@ from datetime import datetime
 from debug_util import debug, debug_df
 from debug_config import verbose
 
-verbose_safety = False # Toggle to True if testing dangerous writes
+verbose_safety = True # it checks the Worksheet we're writing to
 
-# Env check
-load_dotenv(dotenv_path=".env")
-env = os.environ.get("ENV_NAME")
-if not env:
-    debug("DEBUG - Raw ENV_NAME:", repr(os.environ.get("ENV_NAME")))
-    debug("❌ ENV_NAME is missing from .env file. Aborting script.")
-    sys.exit(1)  # Exit with error code 1
+# Only load .env if running outside GitHub Actions
+if os.path.exists(".env"):
+    load_dotenv(dotenv_path=".env")
+    debug("✅ Loaded .env from local file")
+else:
+    debug("📡 Skipping .env load (GitHub Action mode)")
+
+env = os.environ.get("ENV_NAME", "Unknown")
+if env == "Unknown":
+    debug("❌ ENV_NAME not found in environment. Aborting script.")
+    sys.exit(1)
+
 else:
     debug(f"🌿 Running in {env.upper()} mode 🚀")
 
@@ -86,6 +91,8 @@ food_log['Food'] = food_log['Food'].str.strip().str.lower()
 
 # Add the validation for empty Values
 records = []
+nutrition_to_append = []
+
 for i, row in food_log.iterrows():
     if row['Manual Input'] == 'Y':
         records.append({
@@ -95,6 +102,7 @@ for i, row in food_log.iterrows():
             "Carbs (g)": row["C"],
             "Fat (g)": row["F"]
         })
+        nutrition_to_append.append([None, None, None, None])
     else:
         food_name = row['Food']
         value_str = str(row.get('Value', '')).strip()
@@ -123,23 +131,31 @@ for i, row in food_log.iterrows():
             factor = value / float(ref["Per Unit"])
 
             kcal = round(factor * float(ref["Kcal"]),1)
-            protein = round(factor * float(ref["Protein g"]))
-            carb = factor * float(ref["Carb g"])
-            fat = factor * float(ref["Fat g"])
+            protein = round(factor * float(ref["Protein g"]),1)
+            carb = round(factor * float(ref["Carb g"]),1)
+            fat = round(factor * float(ref["Fat g"]),1)
             
             records.append({
                 "Date": row["Date"],
-                "Calories": factor * float(ref["Kcal"]),
-                "Protein (g)": factor * float(ref["Protein g"]),
-                "Carbs (g)": factor * float(ref["Carb g"]),
-                "Fat (g)": factor * float(ref["Fat g"])
+                "Calories": kcal,
+                "Protein (g)": protein,
+                "Carbs (g)": carb,
+                "Fat (g)": fat
             })
-            # Update the Food Log sheet inline
-            update_range = f"G{i+2}:J{i+2}"  # Adjust column letters if your sheet differs
-            food_log_ws.update(update_range, [[kcal, protein, carb, fat]])
+
+            nutrition_to_append.append([kcal, protein, carb, fat])
+            # # Update the Food Log sheet inline
+            # update_range = f"G{i+2}:J{i+2}"  # Adjust column letters if your sheet differs
+            # food_log_ws.update(update_range, [[kcal, protein, carb, fat]])
         else:
             print(f"⚠️ No match found for '{food_name}' — check name or alias.")
 
+# Update the Food Log with nutrition values
+start_row = 2
+end_row = start_row + len(nutrition_to_append) - 1
+update_range = f"G{start_row}:J{end_row}"
+
+food_log_ws.update(update_range, nutrition_to_append)
 
 # In[4]:
 

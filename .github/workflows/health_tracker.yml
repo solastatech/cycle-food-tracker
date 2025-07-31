@@ -23,7 +23,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r minimum_requirements.txt
 
+      - name: Debug ENV_NAME
+        shell: bash
+        run: echo "ENV_NAME = $ENV_NAME"
+
       - name: Run tracker
+        shell: bash
         env:
           ENV_NAME: ${{ vars.ENV_NAME }}
           GOOGLE_CRED: ${{ secrets.GOOGLE_CRED }}
@@ -33,5 +38,6 @@ jobs:
           FOOD_DATA_URL_SHEET: ${{ vars.FOOD_DATA_URL_SHEET }}
           CYCLE_TRACKER_URL: ${{ secrets.CYCLE_TRACKER_URL }}
           CURRENT_CYCLE: ${{ vars.CURRENT_CYCLE }}
+
         run: |
           python Health_tracker.py
