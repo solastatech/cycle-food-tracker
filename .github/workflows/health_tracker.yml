@@ -9,6 +9,16 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
+    env:
+      ENV_NAME: ${{ vars.ENV_NAME }}
+      GOOGLE_CRED: ${{ secrets.GOOGLE_CRED }}
+      FOOD_LOG_URL: ${{ secrets.FOOD_LOG_URL }}
+      FOOD_LOG_URL_SHEET: ${{ vars.FOOD_LOG_URL_SHEET }}
+      FOOD_DATA_URL: ${{ secrets.FOOD_DATA_URL }}
+      FOOD_DATA_URL_SHEET: ${{ vars.FOOD_DATA_URL_SHEET }}
+      CYCLE_TRACKER_URL: ${{ secrets.CYCLE_TRACKER_URL }}
+      CURRENT_CYCLE: ${{ vars.CURRENT_CYCLE }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -24,20 +34,7 @@ jobs:
           pip install -r minimum_requirements.txt
 
       - name: Debug ENV_NAME
-        shell: bash
-        run: echo "ENV_NAME = $ENV_NAME"
+        run: echo "🌱 ENV_NAME = $ENV_NAME"
 
       - name: Run tracker
-        shell: bash
-        env:
-          ENV_NAME: ${{ vars.ENV_NAME }}
-          GOOGLE_CRED: ${{ secrets.GOOGLE_CRED }}
-          FOOD_LOG_URL: ${{ secrets.FOOD_LOG_URL }}
-          FOOD_LOG_URL_SHEET: ${{ vars.FOOD_LOG_URL_SHEET }}
-          FOOD_DATA_URL: ${{ secrets.FOOD_DATA_URL }}
-          FOOD_DATA_URL_SHEET: ${{ vars.FOOD_DATA_URL_SHEET }}
-          CYCLE_TRACKER_URL: ${{ secrets.CYCLE_TRACKER_URL }}
-          CURRENT_CYCLE: ${{ vars.CURRENT_CYCLE }}
-
-        run: |
-          python Health_tracker.py
+        run: python Health_tracker.py
