@@ -25,6 +25,7 @@ jobs:
 
       - name: Run tracker
         env:
+          ENV_NAME: ${{ vars.ENV_NAME }}
           GOOGLE_CRED: ${{ secrets.GOOGLE_CRED }}
           FOOD_LOG_URL: ${{ secrets.FOOD_LOG_URL }}
           FOOD_LOG_URL_SHEET: ${{ vars.FOOD_LOG_URL_SHEET }}
