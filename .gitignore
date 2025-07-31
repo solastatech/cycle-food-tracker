@@ -13,6 +13,7 @@ __pycache__/
 #MacOS
 .DS_Store
 
+#Anything else
+Debug_folder/
 
-.ipynb_checkpoints/
-Health Tracker.ipynb
+
