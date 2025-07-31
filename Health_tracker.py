@@ -15,7 +15,7 @@ from datetime import datetime
 from debug_util import debug, debug_df
 from debug_config import verbose
 
-verbose_safety = True # it checks the Worksheet we're writing to
+verbose_safety = False # Set to True for production sheet check, then to False once confident
 
 # Only load .env if running outside GitHub Actions
 if os.path.exists(".env"):
