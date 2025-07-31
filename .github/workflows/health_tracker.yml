@@ -11,7 +11,7 @@ jobs:
 
     env:
       ENV_NAME: ${{ vars.ENV_NAME }}
-      GOOGLE_CRED: ${{ secrets.GOOGLE_CRED }}
+      KEY_FILE_NAME: ${{ secrets.KEY_FILE_NAME }}
       FOOD_LOG_URL: ${{ secrets.FOOD_LOG_URL }}
       FOOD_LOG_URL_SHEET: ${{ vars.FOOD_LOG_URL_SHEET }}
       FOOD_DATA_URL: ${{ secrets.FOOD_DATA_URL }}
