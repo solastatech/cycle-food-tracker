@@ -1,7 +1,8 @@
 This tracker is developed based on my personal need for a nutrition combined with the menstrual cycle tracker. 
 
 If you want to read my story behind this project, please have a read at
-
+https : // sekarlangit.substack.com/ p /i-automated-my-health-and-menstrual
+(remove the spaces)
 
 Now, let's cut the fluff and crack on with the tech stuff. 
 💕How to use this tracker v1.0💕
