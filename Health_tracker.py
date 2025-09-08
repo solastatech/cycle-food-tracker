@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
 import os
 import sys
 from dotenv import load_dotenv
@@ -72,7 +70,6 @@ debug("🧪 Target sheet from env var:", repr(food_data_url_sheet))
 debug("🔍 Matching sheet?", food_data_url_sheet in sheet_titles)
 debug("⚠️ Sheet name resolved from ENV:", food_log_url_sheet)
 
-
 food_data_ws = food_data_spreadsheet.worksheet(food_data_url_sheet)
 food_log_ws = client.open_by_url(food_log_url).worksheet(food_log_url_sheet)
 cycle_ws = client.open_by_url(cycle_tracker_url).worksheet(current_cycle)
@@ -93,9 +90,6 @@ cycle_df.columns = cycle_df.columns.str.strip()
 food_data['Food'] = food_data['Food'].str.strip().str.lower()
 food_data['Alias'] = food_data['Alias'].str.strip().str.lower()
 food_log['Food'] = food_log['Food'].str.strip().str.lower()
-
-
-# In[3]:
 
 # Add the validation for empty Values
 records = []
@@ -152,11 +146,14 @@ for i, row in food_log.iterrows():
             })
 
             nutrition_to_append.append([kcal, protein, carb, fat])
-            # # Update the Food Log sheet inline
-            # update_range = f"G{i+2}:J{i+2}"  # Adjust column letters if your sheet differs
-            # food_log_ws.update(update_range, [[kcal, protein, carb, fat]])
+        
         else:
             print(f"⚠️ No match found for '{food_name}' — check name or alias.")
+
+# Match the length of the final append with the initial one to ensure no shifting rows
+if not len(nutrition_to_append) == len(food_log):
+    debug("❌ Different lengths between arrays. Potential shifted rows. Aborting mission.")
+    sys.exit(1)
 
 # Update the Food Log with nutrition values
 start_row = 2
@@ -164,9 +161,6 @@ end_row = start_row + len(nutrition_to_append) - 1
 update_range = f"G{start_row}:J{end_row}"
 
 food_log_ws.update(update_range, nutrition_to_append)
-
-# In[4]:
-
 
 # Group by Date
 df = pd.DataFrame(records)
@@ -176,18 +170,9 @@ daily_totals = df.groupby("Date").sum().reset_index()
 cycle_df["Date"] = pd.to_datetime(cycle_df["Date"], format="%d/%m/%Y", 
                                   errors="coerce")  # keeps blank rows as NaT
 
-
-
-# In[5]:
-
-
 debug(cycle_df)
 merged = pd.merge(cycle_df, daily_totals, on="Date", how="left", suffixes=('', '_new'))
 debug(merged)
-
-
-# In[6]:
-
 
 # Update only if new data is available
 for col in ["Calories", "Protein (g)", "Carbs (g)", "Fat (g)"]:
@@ -202,16 +187,9 @@ merged["Date"] = merged["Date"].dt.strftime("%d/%m/%Y")
 merged = merged.replace([pd.NA, np.nan], '')
 debug(merged)
 
-
-# In[7]:
-
-
 values = [merged.columns.tolist()] + merged.values.tolist()
 cycle_ws.update('A1', values)
 print("💕 cycle tracker updated 💕")
-
-
-# In[ ]:
 
 
 
