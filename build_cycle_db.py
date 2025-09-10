@@ -62,9 +62,9 @@ COMBINED_TAB_NAME    = "DB"
 
 # Also save locally?
 SAVE_LOCAL_PARQUET   = True
-LOCAL_PARQUET_PATH   = Path("cycle_db.parquet")
+LOCAL_PARQUET_PATH   = Path("/parquet/cycle_db.parquet")
 SAVE_LOCAL_CSV       = False
-LOCAL_CSV_PATH       = Path("cycle_db.csv")
+LOCAL_CSV_PATH       = Path("/csv/cycle_db.csv")
 
 # Match tabs called "Cycle 4", "cycle5", "CYCLE 07", etc.
 CYCLE_SHEET_REGEX = re.compile(r"^cycle\s*0*\d+\s*$", re.IGNORECASE)
