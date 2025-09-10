@@ -6,6 +6,7 @@ health-tracker.json
 
 #Python
 __pycache__/
+/helpers/__pycache__/
 *.pyc
 .ipynb_checkpoints/	
 *.ipynb		
