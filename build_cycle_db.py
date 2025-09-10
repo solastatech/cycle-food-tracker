@@ -8,7 +8,7 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
-from debug_util import debug, debug_df
+from debug_util import debug
 
 # Auth + config
 def make_client_from_env():
