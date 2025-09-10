@@ -10,8 +10,8 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
-from debug_util import debug, debug_df
-from debug_config import verbose
+from helpers.debug_util import debug, debug_df
+from helpers.debug_config import verbose
 
 verbose_safety = False # Set to True for production sheet check, then to False once confident
 
