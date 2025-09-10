@@ -5,8 +5,8 @@ import json
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from debug_util import debug, debug_df
-from debug_config import verbose
+from .debug_util import debug, debug_df
+from .debug_config import verbose
 
 verbose_safety = True # Set to True for production sheet check, then to False once confident
 

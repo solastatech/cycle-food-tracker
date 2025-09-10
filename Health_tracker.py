@@ -154,6 +154,7 @@ for i, row in food_log.iterrows():
 if not len(nutrition_to_append) == len(food_log):
     debug("❌ Different lengths between arrays. Potential shifted rows. Aborting mission.")
     sys.exit(1)
+debug(nutrition_to_append)
 
 # Update the Food Log with nutrition values
 start_row = 2

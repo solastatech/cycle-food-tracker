@@ -1,4 +1,4 @@
-from helpers.debug_config import verbose
+from .debug_config import verbose
 
 def debug(*args):
     """Print debug messages only when verbose is True."""
