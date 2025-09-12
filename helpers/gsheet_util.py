@@ -11,6 +11,10 @@ from .debug_config import verbose
 verbose_safety = True # Set to True for production sheet check, then to False once confident
 
 def open_gsheet():
+    """
+    Opening the Google sheets of: food data, food log, and cycle tracker (master table).
+    The outputs are 3 objects with the sequence as above.
+    """
     # Only load .env if running outside GitHub Actions
     if os.path.exists(".env"):
         load_dotenv(dotenv_path=".env")

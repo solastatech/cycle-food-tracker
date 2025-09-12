@@ -7,21 +7,18 @@ import pandas as pd
 from datetime import datetime
 from .debug_util import debug, debug_df
 from .debug_config import verbose
-from .gsheet_util import init_env, gsheet_client, open_gsheet
+from .gsheet_util import open_gsheet
 
-def main():
-    init_env()
-    client = gsheet_client()
-    food_data, food_log = open_gsheet(client)
+def nutrition_calc():
+    """
+    Running the nutrition calculation.
+    Returning 2 objects: a list of nutrition_to_append, and the records.
+    nutrition_to_append: has no Date column. Purpose is to update the nutrition values.
+    records: has a Date column. Purpose is to merge with the read Gsheet of master_table.
+    """
+    food_data, food_log = open_gsheet()[:2]
     debug_df(food_data)
     debug_df(food_log)
-
-    # Cleanse food names
-    food_data.columns = food_data.columns.str.strip()
-    food_log.columns = food_log.columns.str.strip()
-    food_data['Food'] = food_data['Food'].str.strip().str.lower()
-    food_data['Alias'] = food_data['Alias'].str.strip().str.lower()
-    food_log['Food'] = food_log['Food'].str.strip().str.lower()
 
     # Add the validation for empty Values
     records = []
@@ -31,7 +28,7 @@ def main():
         if row['Manual Input'] == 'Y':
             records.append({
                 "Date": row["Date"],
-                "Calories": row["Kcal"],
+                "Kcal": row["Kcal"],
                 "Protein (g)": row["P"],
                 "Carbs (g)": row["C"],
                 "Fat (g)": row["F"]
@@ -43,7 +40,8 @@ def main():
             
             if not value_str:
                 print(f"⚠️ Skipping: No value for '{food_name}' on {row['Date']}")
-                continue  # skip this row if no value entered
+                nutrition_to_append.append([None, None, None, None])
+                continue  # ensure no shifted rows
         
             try:
                 value = float(value_str)
@@ -71,7 +69,7 @@ def main():
                 
                 records.append({
                     "Date": row["Date"],
-                    "Calories": kcal,
+                    "Kcal": kcal,
                     "Protein (g)": protein,
                     "Carbs (g)": carb,
                     "Fat (g)": fat
@@ -91,6 +89,6 @@ def main():
     return nutrition_to_append, records
 
 if __name__ == "__main__":
-    nutrition_to_append, records = main()
+    nutrition_to_append, records = nutrition_calc()
     debug(len(nutrition_to_append))
     debug(nutrition_to_append)
