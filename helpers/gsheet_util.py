@@ -78,9 +78,9 @@ def open_gsheet():
     food_log = pd.DataFrame(food_log_ws.get_all_records())
     master_table = pd.DataFrame(master_table_ws.get_all_records())
 
-    debug_df(food_data)
-    debug_df(food_log)
-    debug_df(master_table)    
+    # debug_df(food_data)
+    # debug_df(food_log)
+    # debug_df(master_table)    
 
     # Cleanse food names
     food_data.columns = food_data.columns.str.strip()

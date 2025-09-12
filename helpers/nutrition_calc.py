@@ -17,15 +17,15 @@ def nutrition_calc():
     records: has a Date column. Purpose is to merge with the read Gsheet of master_table.
     """
     food_data, food_log = open_gsheet()[:2]
-    debug_df(food_data)
-    debug_df(food_log)
+    # debug_df(food_data)
+    # debug_df(food_log)
 
     # Add the validation for empty Values
     records = []
     nutrition_to_append = []
 
     for i, row in food_log.iterrows():
-        if row['Manual Input'] == 'Y':
+        if row['Manual Input'] == 'Y' or (row['Value']=='' and row['Manual Input']==''):
             records.append({
                 "Date": row["Date"],
                 "Kcal": row["Kcal"],
@@ -86,9 +86,14 @@ def nutrition_calc():
     if not len(nutrition_to_append) == len(food_log):
         debug("❌ Different lengths between arrays. Potential shifted rows. Aborting mission.")
         sys.exit(1)
+    
+    # Group by date
+    records = pd.DataFrame(records)
     return nutrition_to_append, records
 
 if __name__ == "__main__":
     nutrition_to_append, records = nutrition_calc()
     debug(len(nutrition_to_append))
-    debug(nutrition_to_append)
+    debug_df(records)
+    debug(len(records))
+    
