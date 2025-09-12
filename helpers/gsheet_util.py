@@ -10,7 +10,7 @@ from .debug_config import verbose
 
 verbose_safety = True # Set to True for production sheet check, then to False once confident
 
-def init_env():
+def open_gsheet():
     # Only load .env if running outside GitHub Actions
     if os.path.exists(".env"):
         load_dotenv(dotenv_path=".env")
@@ -29,35 +29,30 @@ def init_env():
     debug("🧪 Sheet loaded:", os.environ.get("FOOD_LOG_URL_SHEET"))
     if verbose_safety == True and os.environ.get("FOOD_LOG_URL_SHEET") == "Worksheet":
         raise RuntimeError("🛑 Refusing to write: You are about to overwrite the production sheet.")
-    return env
-
-
-def _gsheet_cred() -> dict:
+   
     key_input = os.environ["KEY_FILE_NAME"]
 
     # 🧠 Determine whether this is a raw JSON string or a file path
     if key_input.strip().startswith("{"):
         debug("🔐 Detected inlined JSON credentials from GitHub Secrets.")
-        return json.loads(key_input)
+        credentials_dict = json.loads(key_input)
     else:
         debug(f"📄 Loading credentials from file: {key_input}")
         with open(key_input) as f:
-            return json.load(f)
+            credentials_dict = json.load(f)
 
-def gsheet_client() -> gspread.Client:
     # Auth + config
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    credentials_dict = _gsheet_cred()
     creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
-    return gspread.authorize(creds)
+    client = gspread.authorize(creds)
 
-def open_gsheet(client: gspread.Client):
     # Other variables
     food_data_url = os.environ["FOOD_DATA_URL"]
     food_data_url_sheet = os.environ["FOOD_DATA_URL_SHEET"]
     food_log_url = os.environ["FOOD_LOG_URL"]
     food_log_url_sheet = os.environ["FOOD_LOG_URL_SHEET"]
-
+    master_table_url = os.environ["MASTER_TABLE_URL"]
+    master_table_url_sheet = os.environ["MASTER_TABLE_URL_SHEET"]
 
     # Open the sheets
     debug("🧪 FOOD_DATA_URL from .env:", food_data_url)
@@ -72,19 +67,23 @@ def open_gsheet(client: gspread.Client):
 
     food_data_ws = food_data_spreadsheet.worksheet(food_data_url_sheet)
     food_log_ws = client.open_by_url(food_log_url).worksheet(food_log_url_sheet)
+    master_table_ws = client.open_by_url(master_table_url).worksheet(master_table_url_sheet)
 
     # Load into DataFrames
     food_data = pd.DataFrame(food_data_ws.get_all_records())
     food_log = pd.DataFrame(food_log_ws.get_all_records())
+    master_table = pd.DataFrame(master_table_ws.get_all_records())
 
     debug_df(food_data)
     debug_df(food_log)
+    debug_df(master_table)    
 
     # Cleanse food names
     food_data.columns = food_data.columns.str.strip()
     food_log.columns = food_log.columns.str.strip()
+    master_table.columns = master_table.columns.str.strip()
     food_data['Food'] = food_data['Food'].str.strip().str.lower()
     food_data['Alias'] = food_data['Alias'].str.strip().str.lower()
     food_log['Food'] = food_log['Food'].str.strip().str.lower()
 
-    return food_data, food_log
+    return food_data, food_log, master_table
