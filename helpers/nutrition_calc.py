@@ -12,11 +12,13 @@ from .gsheet_util import open_gsheet
 def nutrition_calc():
     """
     Running the nutrition calculation.
-    Returning 2 objects: a list of nutrition_to_append, and the records.
+    Returning 3 objects: a list of nutrition_to_append, records, and the master_table, to avoid running open_gsheet twice in the
+    idempotency check.
     nutrition_to_append: has no Date column. Purpose is to update the nutrition values.
     records: has a Date column. Purpose is to merge with the read Gsheet of master_table.
+    master_table: the master_table combining nutrition and activities
     """
-    food_data, food_log = open_gsheet()[:2]
+    food_data, food_log, master_table = open_gsheet()
     # debug_df(food_data)
     # debug_df(food_log)
 
@@ -30,7 +32,7 @@ def nutrition_calc():
                 "Date": row["Date"],
                 "Kcal": row["Kcal"],
                 "Protein (g)": row["P"],
-                "Carbs (g)": row["C"],
+                "Carb (g)": row["C"],
                 "Fat (g)": row["F"]
             })
             nutrition_to_append.append([None, None, None, None])
@@ -71,7 +73,7 @@ def nutrition_calc():
                     "Date": row["Date"],
                     "Kcal": kcal,
                     "Protein (g)": protein,
-                    "Carbs (g)": carb,
+                    "Carb (g)": carb,
                     "Fat (g)": fat
                 })
 
@@ -89,7 +91,7 @@ def nutrition_calc():
     
     # Group by date
     records = pd.DataFrame(records)
-    return nutrition_to_append, records
+    return nutrition_to_append, records, master_table
 
 if __name__ == "__main__":
     nutrition_to_append, records = nutrition_calc()
