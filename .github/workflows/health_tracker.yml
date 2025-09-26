@@ -16,8 +16,8 @@ jobs:
       FOOD_LOG_URL_SHEET: ${{ vars.FOOD_LOG_URL_SHEET }}
       FOOD_DATA_URL: ${{ secrets.FOOD_DATA_URL }}
       FOOD_DATA_URL_SHEET: ${{ vars.FOOD_DATA_URL_SHEET }}
-      CYCLE_TRACKER_URL: ${{ secrets.CYCLE_TRACKER_URL }}
-      CURRENT_CYCLE: ${{ vars.CURRENT_CYCLE }}
+      MASTER_TABLE_URL: ${{ secrets.MASTER_TABLE_URL }}
+      MASTER_TABLE_URL_SHEET: ${{ vars.MASTER_TABLE_URL_SHEET }}
 
     steps:
       - name: Checkout repo
@@ -37,4 +37,4 @@ jobs:
         run: echo "🌱 ENV_NAME = $ENV_NAME"
 
       - name: Run tracker
-        run: python Health_tracker.py
+        run: python health_v2.py
