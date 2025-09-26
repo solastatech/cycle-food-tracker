@@ -152,6 +152,12 @@ if not len(nutrition_to_append) == len(food_log):
     debug("❌ Different lengths between arrays. Potential shifted rows. Aborting mission.")
     sys.exit(1)
 
+# Update the Food Log with nutrition values
+start_row = 2
+end_row = start_row + len(nutrition_to_append) - 1
+update_range = f"G{start_row}:J{end_row}"
+food_log_ws.update(update_range, nutrition_to_append)
+
 # Group by date
 debug(records)
 
