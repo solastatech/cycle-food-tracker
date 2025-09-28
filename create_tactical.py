@@ -10,7 +10,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from helpers.debug_util import debug, debug_df
 from helpers.debug_config import verbose
 
-verbose_safety = True # Set to True for production sheet check, then to False once confident
+verbose_safety = False # Set to True for production sheet check, then to False once confident
 # Auth + config
 # Only load .env if running outside GitHub Actions
 if os.path.exists(".env"):
