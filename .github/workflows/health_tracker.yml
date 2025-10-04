@@ -38,3 +38,4 @@ jobs:
 
       - name: Run tracker
         run: python health_v2.py
+        run: python create_tactical.py
