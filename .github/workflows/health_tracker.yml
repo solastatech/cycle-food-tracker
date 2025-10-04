@@ -38,4 +38,6 @@ jobs:
 
       - name: Run tracker
         run: python health_v2.py
+
+      - name: Update master data
         run: python create_tactical.py
