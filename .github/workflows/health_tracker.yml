@@ -18,6 +18,10 @@ jobs:
       FOOD_DATA_URL_SHEET: ${{ vars.FOOD_DATA_URL_SHEET }}
       MASTER_TABLE_URL: ${{ secrets.MASTER_TABLE_URL }}
       MASTER_TABLE_URL_SHEET: ${{ vars.MASTER_TABLE_URL_SHEET }}
+      ACTIVITY_LOG_URL: ${{ secrets.ACTIVITY_LOG_URL }}
+      ACTIVITY_LOG_URL_SHEET: ${{ vars.ACTIVITY_LOG_URL_SHEET }}
+      TACTICAL_DB_URL: ${{ secrets.TACTICAL_DB_URL }}
+      TACTICAL_DB_URL_SHEET: ${{ vars.TACTICAL_DB_URL_SHEET }}
 
     steps:
       - name: Checkout repo
