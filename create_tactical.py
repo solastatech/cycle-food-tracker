@@ -84,6 +84,9 @@ merged["Cycle No."] = merged["Cycle No."].replace("", np.nan).ffill()
 # Phase fills as above
 merged["Phase"] = merged["Phase"].replace("", np.nan).ffill()
 
+# Menstrual phase
+merged.loc[(merged["Menstruation"] == "Y"), "Phase"] = "Menstrual"
+
 # Phase ID and days
 phase_order = {
     "Menstrual": 1,
