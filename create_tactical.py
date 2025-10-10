@@ -76,16 +76,21 @@ debug_df(activity_log)
 
 merged = master_table.merge(activity_log, on='Date', how='left').drop(['ID'], axis=1)
 debug(merged)
-debug_df(merged)    
-
-# Cycle fills as above
-merged["Cycle No."] = merged["Cycle No."].replace("", np.nan).ffill()
-
-# Phase fills as above
-merged["Phase"] = merged["Phase"].replace("", np.nan).ffill()
+debug_df(merged)  
 
 # Menstrual phase
 merged.loc[(merged["Menstruation"] == "Y"), "Phase"] = "Menstrual"
+
+# Identify first menstrual day (today is Menstrual, yesterday is not)
+merged["First mens day"] = False
+merged.loc[(merged["Phase"] == "Menstrual") & ~(merged["Phase"].shift(1) == "Menstrual"), "First mens day"] = True
+merged["Cycle No."] = merged["First mens day"].cumsum() + 3 # because my tracker starts at Cycle 4
+
+# Identify the start of follicular day (today is not Menstrual, yesterday is the last day Menstrual)
+merged.loc[~(merged["Menstruation"] == "Y") & (merged["Menstruation"].shift(1) == "Y"), "Phase"] = "Follicular"
+
+# Phase fills as above
+merged["Phase"] = merged["Phase"].replace("", np.nan).ffill()
 
 # Phase ID and days
 phase_order = {
@@ -95,7 +100,7 @@ phase_order = {
     "Luteal": 4
 }
 merged["Phase_ID"] = merged["Phase"].map(phase_order)
-merged["Cycle_Day"] = merged.groupby("Cycle No.").cumcount()+1
+merged["Cycle_Day"] = merged.groupby("Cycle No.").cumcount() + 1
 
 # Steps measure the numbers
 merged["Steps"] = merged["Steps"].astype(str).str.strip()
