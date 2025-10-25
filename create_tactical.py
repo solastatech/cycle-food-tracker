@@ -117,7 +117,7 @@ merged["Bedtime"] = pd.to_datetime(merged["Bedtime"], format="%H:%M", errors="co
 mask = merged["Bedtime"].dt.hour.between(8,11)
 merged.loc[mask, "Bedtime"] += pd.Timedelta(hours=12)
 merged["Bedtime_clean"] = "Not OK"
-merged.loc[(merged["Bedtime"].dt.hour >=20) | (merged["Bedtime"] == "00:00"), "Bedtime_clean"] = "OK"
+merged.loc[(merged["Bedtime"].dt.hour >=20) | ((merged["Bedtime"].dt.hour == 0) & (merged["Bedtime"].dt.minute ==0)), "Bedtime_clean"] = "OK"
 merged.loc[merged["Bedtime"].isna(), "Bedtime_clean"] = "No Data"
 merged["Bedtime"] = merged["Bedtime"].dt.strftime("%H:%M")
 
@@ -151,4 +151,5 @@ merged = merged.replace("-", "")
 # Print to GSheet
 set_with_dataframe(tactical_db_ws, merged, row=1,col=1, include_column_header=True)
 print("💕 Tactical DB updated 💕")
+
 
