@@ -12,6 +12,7 @@ __pycache__/
 *.ipynb
 /helpers/idempotency_check.py
 /helpers/nutrition_calc.py 
+/helpers/gsheet_util.py 
 build_cycle_db.py
 Health_tracker.py
 troubleshoot.py
