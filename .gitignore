@@ -9,12 +9,21 @@ __pycache__/
 /helpers/__pycache__/
 *.pyc
 .ipynb_checkpoints/	
-*.ipynb		
+*.ipynb
+/helpers/idempotency_check.py
+/helpers/nutrition_calc.py 
+build_cycle_db.py
+Health_tracker.py
+troubleshoot.py
+
 
 #MacOS
 .DS_Store
 
 #Anything else
 Debug_folder/
+Untracked/
+Health_tracker_icon.png
+
 
 
