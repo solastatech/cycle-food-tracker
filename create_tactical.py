@@ -148,6 +148,14 @@ debug(merged.tail(10))
 # #Data clean-up on poop-time
 merged = merged.replace("-", "")
 
+# Filter for LookerStudio
+cycle_to_display = 4
+max_cycle = merged["Cycle No."].max()
+# merged["Include_Last4"] = False
+# merged.loc[(merged["Cycle No."] > (max_cycle - cycle_to_display)), "Include_Last4"] = True
+
+merged["Include_Last4"] = merged["Cycle No."] > (max_cycle - cycle_to_display)
+
 # Print to GSheet
 set_with_dataframe(tactical_db_ws, merged, row=1,col=1, include_column_header=True)
 print("💕 Tactical DB updated 💕")
