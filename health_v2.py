@@ -217,6 +217,7 @@ debug(date_to_row)
 # ==============================
 # UPDATE: write ONLY the columns in `cols`
 # ==============================
+updates = []  # collect all cell updates here
 for _, r in to_update.iterrows():
     dt = r['Date']
     if dt not in date_to_row:
@@ -238,7 +239,24 @@ for _, r in to_update.iterrows():
         else:
             value 
         debug(value)
-        master_table_ws.update(cell_a1, [[value]], raw=False)
+        updates.append({
+            "range": cell_a1,
+            "values": [[value]],
+        })
+
+debug(updates)
+debug(len(updates))
+
+# helper to chunk the updates so we don't send 3000 ranges in one call
+def chunked(seq, n):
+    for i in range(0, len(seq), n):
+        yield seq[i:i+n]
+
+for chunk in chunked(updates, 60):  
+    master_table_ws.batch_update(
+        chunk,
+        value_input_option='USER_ENTERED'
+    )
 
 # ==============================
 # INSERT: append rows with your `cols` only,
