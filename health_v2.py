@@ -84,6 +84,7 @@ master_table.columns = master_table.columns.str.strip()
 food_data['Food'] = food_data['Food'].str.strip().str.lower()
 food_data['Alias'] = food_data['Alias'].str.strip().str.lower()
 food_log['Food'] = food_log['Food'].str.strip().str.lower()
+food_log = food_log.dropna(subset=["Date"]).copy()
 
 # Add the validation for empty Values
 records = []
