@@ -102,6 +102,7 @@ for i, row in food_log.iterrows():
         nutrition_to_append.append([None, None, None, None])
     else:
         food_name = row['Food']
+        food_id = str(row['Food_Data_ID']).strip()
         value_str = str(row.get('Value', '')).strip()
         
         if not value_str:
@@ -123,7 +124,8 @@ for i, row in food_log.iterrows():
             except ValueError:
                 print(f"⚠️ Invalid conversion factor '{conversion_str}' for {food_name}, ignoring.")
 
-        match = food_data[(food_data['Food'] == food_name) | (food_data['Alias'] == food_name)]
+        match = food_data.loc[food_data["ID"].astype(str).str.strip() == food_id]
+        # match = food_data[(food_data['Food'] == food_name) | (food_data['Alias'] == food_name)]
         if not match.empty:
             ref = match.iloc[0]
             factor = value / float(ref["Per Unit"])
