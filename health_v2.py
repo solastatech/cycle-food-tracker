@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from helpers.debug_util import debug, debug_df
 from helpers.debug_config import verbose
 
-verbose_safety = False # Set to True for production sheet check, then to False once confident
+verbose_safety = True # Set to True for production sheet check, then to False once confident
 
 # Only load .env if running outside GitHub Actions
 if os.path.exists(".env"):
@@ -92,14 +92,19 @@ nutrition_to_append = []
 
 for i, row in food_log.iterrows():
     if row['Manual Input'] == 'Y' or (row['Value']=='' and row['Manual Input']==''):
+        try:
+            satfat_manual = float(row.get("Saturated Fat g",1) or 0)
+        except(TypeError,ValueError):
+            satfat_manual = 0
         records.append({
             "Date": row["Date"],
             "Kcal": row["Kcal"],
             "Protein (g)": row["P"],
             "Carb (g)": row["C"],
-            "Fat (g)": row["F"]
+            "Fat (g)": row["F"],
+            "Sat Fat (g)": satfat_manual
         })
-        nutrition_to_append.append([None, None, None, None])
+        nutrition_to_append.append([None, None, None, None, None])
     else:
         food_name = row['Food']
         food_id = str(row['Food_Data_ID']).strip()
@@ -107,7 +112,7 @@ for i, row in food_log.iterrows():
         
         if not value_str:
             print(f"⚠️ Skipping: No value for '{food_name}' on {row['Date']}")
-            nutrition_to_append.append([None, None, None, None])
+            nutrition_to_append.append([None, None, None, None, None])
             continue  # ensure no shifted rows
     
         try:
@@ -134,16 +139,22 @@ for i, row in food_log.iterrows():
             protein = round(factor * float(ref["Protein g"]),1)
             carb = round(factor * float(ref["Carb g"]),1)
             fat = round(factor * float(ref["Fat g"]),1)
+            satfat_raw = ref.get("Saturated Fat g")
+            try:
+                satfat = round(factor * float(ref["Saturated Fat g"]),1)
+            except(TypeError,ValueError):
+                satfat = 0
             
             records.append({
                 "Date": row["Date"],
                 "Kcal": kcal,
                 "Protein (g)": protein,
                 "Carb (g)": carb,
-                "Fat (g)": fat
+                "Fat (g)": fat,
+                "Sat Fat (g)": satfat
             })
 
-            nutrition_to_append.append([kcal, protein, carb, fat])
+            nutrition_to_append.append([kcal, protein, carb, fat, satfat])
         
         else:
             print(f"⚠️ No match found for '{food_name}' — check name or alias.")
@@ -154,12 +165,17 @@ debug(f"Length of food log:",len(food_log))
 if not len(nutrition_to_append) == len(food_log):
     debug("❌ Different lengths between arrays. Potential shifted rows. Aborting mission.")
     sys.exit(1)
+debug(f"Nutrition to append:", nutrition_to_append)
 
 # Update the Food Log with nutrition values
 start_row = 2
 end_row = start_row + len(nutrition_to_append) - 1
-update_range = f"G{start_row}:J{end_row}"
-food_log_ws.update(update_range, nutrition_to_append)
+update_range_1 = f"G{start_row}:J{end_row}"
+values_for_4_cols = [row[:4] for row in nutrition_to_append]
+update_range_2 = f"M{start_row}:M{end_row}"
+values_for_5th_col = [[row[4]] for row in nutrition_to_append]
+food_log_ws.update(range_name=update_range_1, values=values_for_4_cols)
+food_log_ws.update(range_name=update_range_2, values=values_for_5th_col)
 
 # Group by date
 debug(records)
