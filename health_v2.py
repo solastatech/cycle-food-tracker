@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from helpers.debug_util import debug, debug_df
 from helpers.debug_config import verbose
 
-verbose_safety = True # Set to True for production sheet check, then to False once confident
+verbose_safety = False # Set to True for production sheet check, then to False once confident
 
 # Only load .env if running outside GitHub Actions
 if os.path.exists(".env"):
@@ -213,7 +213,7 @@ mask_update = (~mask_new) & (k_new != k_cur)   # Date present & different Kcal =
 
 debug(f"Mask_new:", mask_new)
 debug(f"Mask_update:", mask_update)
-cols = ['Date', 'Kcal', 'Protein (g)', 'Carb (g)', 'Fat (g)']
+cols = ['Date', 'Kcal', 'Protein (g)', 'Carb (g)', 'Fat (g)', 'Sat Fat (g)']
 
 to_insert = new_df.loc[mask_new, cols].copy()
 to_update = new_df.loc[mask_update, cols].copy()
