@@ -90,21 +90,30 @@ food_log = food_log.dropna(subset=["Date"]).copy()
 records = []
 nutrition_to_append = []
 
+def safe_float(value, default=0.0):
+    try:
+        return float(value or default)
+    except (TypeError, ValueError):
+        return default
+
 for i, row in food_log.iterrows():
     if row['Manual Input'] == 'Y' or (row['Value']=='' and row['Manual Input']==''):
-        try:
-            satfat_manual = float(row.get("Saturated Fat g",1) or 0)
-        except(TypeError,ValueError):
-            satfat_manual = 0
+        
+        satfat_manual = safe_float(row.get("Saturated Fat g", 0))
+        fibre_manual  = safe_float(row.get("Fibre g", 0))
+        sugar_manual  = safe_float(row.get("Sugar g", 0))
+
         records.append({
             "Date": row["Date"],
             "Kcal": row["Kcal"],
             "Protein (g)": row["P"],
             "Carb (g)": row["C"],
             "Fat (g)": row["F"],
-            "Sat Fat (g)": satfat_manual
+            "Sat Fat (g)": satfat_manual,
+            "Fibre (g)" : fibre_manual,
+            "Sugar (g)" : sugar_manual
         })
-        nutrition_to_append.append([None, None, None, None, None])
+        nutrition_to_append.append([None, None, None, None, None, None, None, None])
     else:
         food_name = row['Food']
         food_id = str(row['Food_Data_ID']).strip()
@@ -112,7 +121,7 @@ for i, row in food_log.iterrows():
         
         if not value_str:
             print(f"⚠️ Skipping: No value for '{food_name}' on {row['Date']}")
-            nutrition_to_append.append([None, None, None, None, None])
+            nutrition_to_append.append([None, None, None, None, None, None, None, None])
             continue  # ensure no shifted rows
     
         try:
@@ -139,22 +148,22 @@ for i, row in food_log.iterrows():
             protein = round(factor * float(ref["Protein g"]),1)
             carb = round(factor * float(ref["Carb g"]),1)
             fat = round(factor * float(ref["Fat g"]),1)
-            satfat_raw = ref.get("Saturated Fat g")
-            try:
-                satfat = round(factor * float(ref["Saturated Fat g"]),1)
-            except(TypeError,ValueError):
-                satfat = 0
-            
+            satfat = round(factor * safe_float(ref["Saturated Fat g"]),0)
+            fibre = round(factor * safe_float(ref["Fibre g"]),0)
+            sugar = round(factor * safe_float(ref["Sugar g"]),0)
+       
             records.append({
                 "Date": row["Date"],
                 "Kcal": kcal,
                 "Protein (g)": protein,
                 "Carb (g)": carb,
                 "Fat (g)": fat,
-                "Sat Fat (g)": satfat
+                "Sat Fat (g)": satfat,
+                "Fibre (g)" : fibre,
+                "Sugar (g)" : sugar
             })
 
-            nutrition_to_append.append([kcal, protein, carb, fat, satfat])
+            nutrition_to_append.append([kcal, protein, carb, fat, satfat, fibre, sugar])
         
         else:
             print(f"⚠️ No match found for '{food_name}' — check name or alias.")
@@ -172,8 +181,8 @@ start_row = 2
 end_row = start_row + len(nutrition_to_append) - 1
 update_range_1 = f"G{start_row}:J{end_row}"
 values_for_4_cols = [row[:4] for row in nutrition_to_append]
-update_range_2 = f"M{start_row}:M{end_row}"
-values_for_5th_col = [[row[4]] for row in nutrition_to_append]
+update_range_2 = f"M{start_row}:O{end_row}"
+values_for_5th_col = [row[4:] for row in nutrition_to_append]
 food_log_ws.update(range_name=update_range_1, values=values_for_4_cols)
 food_log_ws.update(range_name=update_range_2, values=values_for_5th_col)
 
@@ -213,7 +222,7 @@ mask_update = (~mask_new) & (k_new != k_cur)   # Date present & different Kcal =
 
 debug(f"Mask_new:", mask_new)
 debug(f"Mask_update:", mask_update)
-cols = ['Date', 'Kcal', 'Protein (g)', 'Carb (g)', 'Fat (g)', 'Sat Fat (g)']
+cols = ['Date', 'Kcal', 'Protein (g)', 'Carb (g)', 'Fat (g)', 'Sat Fat (g)', 'Fibre (g)', 'Sugar (g)']
 
 to_insert = new_df.loc[mask_new, cols].copy()
 to_update = new_df.loc[mask_update, cols].copy()
