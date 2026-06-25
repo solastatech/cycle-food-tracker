@@ -74,7 +74,7 @@ activity_log.columns = [str(c).strip() for c in activity_log.columns]
 debug_df(master_table)
 debug_df(activity_log)
 
-merged = master_table.merge(activity_log, on='Date', how='left').drop(['ID'], axis=1)
+merged = master_table.merge(activity_log, on='Date', how='right').drop(['ID'], axis=1)
 debug(merged)
 debug_df(merged)  
 
